@@ -1,0 +1,75 @@
+//количество линкеров
+sl - interoperabilityHelpers
+
+
+//добавление лицензий
+sm -updatelicense:"c:/ NewLicFile.dat" 
+
+
+sm -quiesce:1 - запретить вход пользователей
+sm -quiesce:0 - разрешить вход
+
+
+//таблица с последними номерами уникальных id - 
+counters
+
+
+//загрузка анлода из командной строки
+sm file.load operator.unl NULL NULL winnt -bg
+загружать за раз данные только в 1 таблицу
+
+
+//Коды возврата
+https://community.microfocus.com/t5/Service-Manager-Service-Center/How-to-return-meaningful-SM-WebService-exceptions/td-p/969771
+
+
+// заполнение поля с датой в форме поиска обращений
+В процессе sd.search.init, во вкладке "Исходные выражения", добавили запись:
+$adv.open.start=tod() - 60*24*365*2
+которая заполняет поле "Открыто: после этой даты" при открытии формы поиска
+
+
+// окружение звездочками поискового запроса по линку
+$query="location.full.name #\"*"+location.full.name in $File+"*\""
+
+
+//поиск по всему СМу
+fa
+
+
+//условие сравнения сохраненного значения поля и текущего для activityactions
+not  (same(escalated.bev in $L.file, escalated.bev in $L.file.save))
+
+
+//запись в операции из рулсета
+lib.hpeutils.SetActivityActionCm3r(vars["$L_file"]["number"],"Исключение из релиза", "Изменение "+vars["$bvrelcode"]+" исключено из релиза"]);
+
+
+//переменные ролей в форматконтроле login.default
+$G.chm.where.i.analyst
+$G.chm.where.i.coordinator
+$G.chm.where.i.manager
+
+
+//перепланировка действия, если не удалось сохранить
+if (rc == RC_CANT_HAVE || rc == 51 || rc == null || rc == false)
+	{
+		lib.interoperabilityHelpers.rescheduleAction(vars["$L.file"], "bv_st4_Changetoestimate");
+	}
+
+
+//путь файла с именем на странице входа АС Сервис Деск
+\webapps\971\WEB-INF\classes\com\hp\ov\cwc\web\
+\webapps\964_250\WEB-INF\classes\com\hp\ov\sm\client\webtier\cpe_web_ru.properties , cpe_web_ru.utf8
+
+
+//удаление согласующего в изменении
+record['phaseApprovals']  = lib.ChangeBev.removeOpFromAppDef(actualApprover, record['number'], myAppDef, record['phaseApprovals']);	
+vars['$recalc']=true;
+
+
+//удаление блокировки RAD
+se.unlock.object
+string1		$L.lock.name
+query		request
+record		$L.object
